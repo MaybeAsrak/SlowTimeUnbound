@@ -1,4 +1,4 @@
-# Magic Utils
+# Slow Time Unbound
 
 Built using commonlibsse-ng
 
