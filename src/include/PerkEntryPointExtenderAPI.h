@@ -134,7 +134,7 @@ namespace PerkEntryPointExtenderAPI
 		HINSTANCE API = GetModuleHandle(L"PerkEntryPointExtender.dll");
 
 		if (API == nullptr) {
-            RE::ConsoleLog::GetSingleton()->Print("Hello, total failure!");
+            //RE::ConsoleLog::GetSingleton()->Print("Hello, total failure!");
 
 			//logger::critical("PerkEntryPointExtender.dll not found, API will remain non functional.");
 			return nullptr;
@@ -143,15 +143,15 @@ namespace PerkEntryPointExtenderAPI
 		request_interface = (RequestFunction)GetProcAddress(API, "PEPE_RequestInterfaceImpl");
 
 		if (request_interface) {
-            if (static unsigned int once = 0; once++ == 0)
-            RE::ConsoleLog::GetSingleton()->Print("Hello, success!");
-            //float voidish = 1;  
+            if (static unsigned int once = 0; once++ == 0) {
+            }
+
 			 //logger::info("Successful module and request, PEPE");
 
 		}
 		else {
 			if (static unsigned int once = 0; once++ == 0) 
-			RE::ConsoleLog::GetSingleton()->Print("Hello, minor failure!");
+			//RE::ConsoleLog::GetSingleton()->Print("Hello, minor failure!");
 
 				//logger::critical("Unsuccessful module and request, PEPE");
 

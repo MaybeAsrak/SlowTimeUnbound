@@ -5,25 +5,19 @@
 struct Hooks {
     struct SetMagicTimeSlowdownStart {
         static void thunk(RE::VATS* a_vats, float a_worldMagnitude, float a_playerMagnitude) {
-            const auto magicTimeSlowdown = a_vats->magicTimeSlowdown;
-            const auto playermagicTimeSlowdown = a_vats->playerMagicTimeSlowdown;
-            
+            auto magicTimeSlowdown = a_vats->magicTimeSlowdown;
+            auto playermagicTimeSlowdown = a_vats->playerMagicTimeSlowdown;
+            if (magicTimeSlowdown == 0) {
+                magicTimeSlowdown = 1.0f;
+            }
+            if (playermagicTimeSlowdown == 0) {
+                playermagicTimeSlowdown = 1.0f;
+            }
             if (a_worldMagnitude < 0) {
-                if (playermagicTimeSlowdown == 0) {
-                    func(a_vats, magicTimeSlowdown, a_worldMagnitude * -1);
-                } else {
                     func(a_vats, magicTimeSlowdown, a_worldMagnitude * -1 * playermagicTimeSlowdown);
-                
-                }
-                   
             }
             else {
-                if (magicTimeSlowdown == 0) {
-                    func(a_vats, a_worldMagnitude, 1.0f);
-                } else {
-                    func(a_vats, magicTimeSlowdown * a_worldMagnitude, playermagicTimeSlowdown);
-                }
-                   
+                    func(a_vats, magicTimeSlowdown * a_worldMagnitude, playermagicTimeSlowdown);   
             }
         }
         static inline REL::Relocation<decltype(thunk)> func;
@@ -38,7 +32,6 @@ struct Hooks {
                 playertimescale = 1.0f;
             }
            if (a_AE->effect->baseEffect->IsHostile()) {
-           
            timescale = a_AE->GetMagnitude()*-1;          
            a_AE->duration = a_AE->duration * timescale * -1 * playertimescale;
            }
@@ -54,17 +47,20 @@ struct Hooks {
     struct SlowTimeStop {
         static void thunk(RE::SlowTimeEffect* a_SlowTime) {
            const auto magicTime = RE::VATS::GetSingleton();
+           if (magicTime) {
+           
            auto magicTimeSlowdown = magicTime->magicTimeSlowdown;
            auto playermagicTimeSlowdown = magicTime->playerMagicTimeSlowdown;
            float timescale;
            if (a_SlowTime->effect->baseEffect->IsHostile()) {
            timescale = a_SlowTime->GetMagnitude();
-           magicTime->SetMagicTimeSlowdown((magicTimeSlowdown), playermagicTimeSlowdown/timescale);
+           magicTime->SetMagicTimeSlowdown((magicTimeSlowdown), playermagicTimeSlowdown / timescale);
            } else {
            timescale = a_SlowTime->GetMagnitude();
            magicTime->SetMagicTimeSlowdown((magicTimeSlowdown / timescale), playermagicTimeSlowdown);
            }
            func(a_SlowTime);
+        }
         }
         static inline REL::Relocation<decltype(thunk)> func;
     };
@@ -77,7 +73,8 @@ struct Hooks {
 
     struct NullGetCurrentMultiplier {
         static float thunk(RE::VATS* a_vats) {
-            return 1.0f;
+           float test = func(a_vats);
+           return 1.0f;
         }
         static inline REL::Relocation<decltype(thunk)> func;
     };
