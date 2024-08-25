@@ -52,13 +52,34 @@ struct Hooks {
            auto magicTimeSlowdown = magicTime->magicTimeSlowdown;
            auto playermagicTimeSlowdown = magicTime->playerMagicTimeSlowdown;
            float timescale;
+
+           float newWorldTimeScale;
+           float newPlayerTimeScale;
+
            if (a_SlowTime->effect->baseEffect->IsHostile()) {
-           timescale = a_SlowTime->GetMagnitude();
-           magicTime->SetMagicTimeSlowdown((magicTimeSlowdown), playermagicTimeSlowdown / timescale);
+               timescale = a_SlowTime->GetMagnitude();
+
+               newWorldTimeScale = magicTimeSlowdown;
+               newPlayerTimeScale = playermagicTimeSlowdown / timescale;
            } else {
-           timescale = a_SlowTime->GetMagnitude();
-           magicTime->SetMagicTimeSlowdown((magicTimeSlowdown / timescale), playermagicTimeSlowdown);
+               timescale = a_SlowTime->GetMagnitude();
+
+               newWorldTimeScale = magicTimeSlowdown / timescale;
+               newPlayerTimeScale = playermagicTimeSlowdown;
            }
+
+           if (
+               abs(newWorldTimeScale - 1.0f) < 0.001
+               && abs(newPlayerTimeScale - 1.0f) < 0.001
+           ) {
+               // If there is no slow time effect, world time scale must be 0,
+               // otherwise horses will break.
+               newWorldTimeScale = 0.0f;
+               newPlayerTimeScale = 1.0f;
+           }
+
+           magicTime->SetMagicTimeSlowdown(newWorldTimeScale, newPlayerTimeScale);
+
            func(a_SlowTime);
         }
         }
